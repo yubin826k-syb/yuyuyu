@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>취준 기록실</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0E0B0F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="취준 기록실">
+<link rel="apple-touch-icon" href="icon-192.png">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=Gaegu:wght@300;400;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#0E0B0F;
+    --ink:#F6ECF1;
+    --ink-soft:#C79FB8;
+    --card:#18131A;
+    --line:#3A2C36;
+    --teal:#FF4FA3;
+    --teal-soft:#3A1B2C;
+    --amber:#FF1F7A;
+    --amber-soft:#451227;
+    --blue:#FFAAD4;
+    --blue-soft:#34202C;
+    --red:#9A5470;
+    --red-soft:#2B1A22;
+    --grey:#8C8290;
+    --grey-soft:#221C25;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Gaegu', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:36px 20px 80px;}
+
+  /* header */
+  .masthead{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:16px;margin-bottom:20px;flex-wrap:wrap;gap:14px;
+  }
+  .masthead h1{
+    font-family:'Nanum Pen Script', cursive;
+    font-weight:700;font-size:30px;margin:0;letter-spacing:-0.5px;
+  }
+  .masthead .sub{
+    font-family:'IBM Plex Mono', monospace;font-size:11px;color:var(--ink-soft);
+    letter-spacing:1px;text-transform:uppercase;margin-top:4px;
+  }
+  .stats{display:flex;gap:8px;flex-wrap:wrap;}
+  .stat-chip{
+    font-family:'IBM Plex Mono', monospace;font-size:11.5px;
+    border:1px solid var(--line);background:var(--card);
+    padding:6px 10px;border-radius:20px;display:flex;gap:6px;align-items:center;white-space:nowrap;
+  }
+  .stat-chip b{font-size:13px;}
+
+  /* toolbar */
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:26px;align-items:center;}
+  .toolbar input[type="text"], .toolbar select{
+    font-family:'Gaegu', sans-serif;font-size:13.5px;
+    padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);
+  }
+  .toolbar input[type="text"]{flex:1;min-width:160px;}
+  .btn{
+    font-family:'Gaegu', sans-serif;font-weight:700;font-size:13.5px;
+    border:none;border-radius:8px;padding:10px 16px;cursor:pointer;
+    background:var(--ink);color:var(--paper);transition:transform .12s ease, opacity .12s ease;
+  }
+  .btn:hover{opacity:.85;}
+  .btn:active{transform:scale(0.97);}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);}
+  .btn.danger{background:var(--amber);color:#1A0410;}
+  .btn.small{padding:6px 11px;font-size:12px;border-radius:6px;}
+
+  /* grid */
+  #grid{display:flex;flex-direction:column;gap:14px;}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:18px 20px;position:relative;overflow:hidden;
+  }
+  .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;}
+  .lot{
+    font-family:'IBM Plex Mono', monospace;font-size:11px;color:var(--grey);
+    letter-spacing:1px;margin-bottom:6px;display:block;
+  }
+  .company{
+    font-family:'Nanum Pen Script', cursive;font-weight:700;font-size:21px;margin:0 0 3px;
+  }
+  .position{font-size:13.5px;color:var(--ink-soft);margin:0;}
+  .stamp{
+    font-family:'IBM Plex Mono', monospace;font-weight:600;font-size:11px;
+    letter-spacing:1.5px;text-transform:uppercase;padding:5px 11px;
+    border-radius:20px;border:1.5px dashed currentColor;white-space:nowrap;
+    transform:rotate(-2deg);flex-shrink:0;
+  }
+  .stamp.writing{color:var(--grey);background:var(--grey-soft);}
+  .stamp.applied{color:var(--blue);background:var(--blue-soft);}
+  .stamp.doc{color:var(--teal);background:var(--teal-soft);}
+  .stamp.interview{color:var(--amber);background:var(--amber-soft);}
+  .stamp.pass{color:#fff;background:var(--teal);border-style:solid;transform:rotate(-3deg);}
+  .stamp.fail{color:#fff;background:var(--red);border-style:solid;}
+
+  .meta-row{
+    display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;
+    font-family:'IBM Plex Mono', monospace;font-size:12px;color:var(--ink-soft);
+  }
+  .meta-row span{display:flex;align-items:center;gap:5px;}
+  .meta-row a{color:var(--teal);text-decoration:none;border-bottom:1px solid var(--teal);}
+
+  .card-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+
+  .detail-panel{
+    margin-top:16px;padding-top:16px;border-top:1px dashed var(--line);
+    display:none;
+  }
+  .detail-panel.open{display:block;}
+  .detail-block h4{
+    font-family:'Gaegu', sans-serif;font-size:12px;color:var(--ink-soft);
+    text-transform:uppercase;letter-spacing:1px;margin:0 0 6px;
+  }
+  .detail-block p{font-size:14px;line-height:1.6;margin:0 0 16px;white-space:pre-wrap;}
+  .qa{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:10px;}
+  .qa .q{font-weight:700;font-size:13.5px;margin-bottom:4px;}
+  .qa .limit{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--grey);margin-left:6px;}
+  .qa .a{font-size:13.5px;line-height:1.6;color:var(--ink-soft);white-space:pre-wrap;margin-top:6px;}
+  .qa .a.empty{color:var(--grey);font-style:italic;}
+
+  .confirm-row{display:flex;gap:8px;align-items:center;font-size:13px;margin-top:10px;}
+
+  .empty-state{
+    text-align:center;padding:70px 20px;color:var(--ink-soft);
+    border:1px dashed var(--line);border-radius:12px;background:var(--card);
+  }
+  .empty-state .big{font-family:'Nanum Pen Script', cursive;font-size:20px;color:var(--ink);margin-bottom:8px;}
+
+  /* modal */
+  .overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,0.7);
+    display:none;align-items:center;justify-content:center;padding:20px;z-index:50;
+  }
+  .overlay.open{display:flex;}
+  .modal{
+    background:var(--paper);border-radius:14px;max-width:640px;width:100%;
+    max-height:88vh;overflow-y:auto;padding:26px 28px 30px;border:1px solid var(--line);
+  }
+  .modal h2{font-family:'Nanum Pen Script', cursive;font-size:22px;margin:0 0 18px;}
+  .field{margin-bottom:14px;}
+  .field label{
+    display:block;font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:5px;
+    text-transform:uppercase;letter-spacing:0.5px;
+  }
+  .field input, .field textarea, .field select{
+    width:100%;font-family:'Gaegu', sans-serif;font-size:14px;
+    padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);
+  }
+  .field textarea{resize:vertical;min-height:64px;line-height:1.5;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .qa-edit{border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px;background:var(--card);}
+  .qa-edit-top{display:flex;gap:10px;margin-bottom:8px;}
+  .qa-edit-top input[type="text"]{flex:1;}
+  .qa-edit-top input[type="number"]{width:120px;}
+  .charcount{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--grey);text-align:right;margin-top:3px;}
+  .charcount.over{color:var(--red);}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;position:sticky;bottom:0;background:var(--paper);padding-top:8px;}
+  .remove-qa{background:transparent;border:none;color:var(--red);font-size:12px;cursor:pointer;font-weight:700;}
+
+  #loading, #scrapLoading{text-align:center;padding:60px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;font-size:12px;}
+
+  /* tabs */
+  .tabs{display:flex;gap:6px;margin-bottom:22px;border-bottom:1px solid var(--line);}
+  .tab-btn{
+    font-family:'Gaegu', sans-serif;font-weight:700;font-size:14px;
+    background:none;border:none;padding:10px 4px;margin-right:18px;cursor:pointer;
+    color:var(--ink-soft);border-bottom:2px solid transparent;
+  }
+  .tab-btn.active{color:var(--ink);border-bottom-color:var(--ink);}
+
+  /* scrap cards */
+  .scrap-card{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:16px 18px;display:flex;flex-direction:column;gap:8px;
+  }
+  .scrap-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+  .scrap-company{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--teal);
+    text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;display:block;
+  }
+  .scrap-title{margin:0;font-size:15.5px;font-weight:700;line-height:1.4;}
+  .scrap-title a{color:var(--ink);text-decoration:none;}
+  .scrap-title a:hover{text-decoration:underline;}
+  .type-badge{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;
+    padding:4px 9px;border-radius:20px;white-space:nowrap;letter-spacing:0.5px;
+  }
+  .type-badge.기사{background:var(--blue-soft);color:var(--blue);}
+  .type-badge.블로그{background:var(--teal-soft);color:var(--teal);}
+  .type-badge.채용공고{background:var(--amber-soft);color:var(--amber);}
+  .type-badge.기타{background:var(--grey-soft);color:var(--grey);}
+  .scrap-memo{font-size:13.5px;line-height:1.6;color:var(--ink-soft);white-space:pre-wrap;margin:0;}
+  .scrap-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:4px;}
+  .scrap-date{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--grey);}
+  .scrap-actions{display:flex;gap:8px;}
+
+  /* posting cards */
+  .posting-card{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:16px 18px 14px;
+  }
+  .posting-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+  .platform-badge{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;
+    padding:4px 9px;border-radius:20px;white-space:nowrap;letter-spacing:0.5px;
+    background:var(--blue-soft);color:var(--blue);
+  }
+  .posting-company{font-family:'Nanum Pen Script', cursive;font-weight:700;font-size:18px;margin:8px 0 2px;}
+  .posting-position{font-size:13.5px;color:var(--ink-soft);margin:0;}
+  .deadline{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;
+    padding:4px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;
+  }
+  .deadline.ok{background:var(--teal-soft);color:var(--teal);}
+  .deadline.soon{background:var(--amber-soft);color:var(--amber);}
+  .deadline.over{background:var(--grey-soft);color:var(--grey);}
+  .posting-meta{
+    display:flex;gap:16px;margin-top:10px;flex-wrap:wrap;
+    font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);
+  }
+  .posting-meta a{color:var(--teal);text-decoration:none;border-bottom:1px solid var(--teal);}
+  .posting-memo{font-size:13.5px;line-height:1.6;color:var(--ink-soft);white-space:pre-wrap;margin:10px 0 0;}
+  .applied-toggle{
+    font-family:'Gaegu', sans-serif;font-size:12px;font-weight:700;
+    border-radius:20px;padding:5px 12px;cursor:pointer;border:1px solid var(--line);
+    background:var(--card);color:var(--ink-soft);
+  }
+  .applied-toggle.on{background:var(--teal);color:#fff;border-color:var(--teal);}
+  .posting-actions{display:flex;justify-content:space-between;align-items:center;margin-top:14px;flex-wrap:wrap;gap:8px;}
+  .posting-actions .right{display:flex;gap:8px;}
+
+  /* password gate */
+  #gate{
+    position:fixed;inset:0;background:var(--paper);z-index:200;
+    display:flex;align-items:center;justify-content:center;padding:24px;
+  }
+  #gate.hidden{display:none;}
+  .gate-box{max-width:360px;width:100%;text-align:center;}
+  .gate-box h1{font-family:'Nanum Pen Script',cursive;font-size:44px;color:var(--teal);margin:0 0 6px;}
+  .gate-box p{font-size:14px;color:var(--ink-soft);margin:0 0 22px;line-height:1.6;}
+  .gate-box input{
+    width:100%;font-family:'Gaegu',sans-serif;font-size:16px;text-align:center;
+    padding:12px;border:1px solid var(--line);border-radius:10px;
+    background:var(--card);color:var(--ink);margin-bottom:10px;letter-spacing:2px;
+  }
+  .gate-box .btn{width:100%;padding:12px;font-size:14px;}
+  .gate-error{color:var(--amber);font-size:12.5px;margin-top:8px;min-height:16px;}
+  .gate-hint{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--grey);margin-top:18px;}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="gate-box">
+    <h1>취준 기록실</h1>
+    <p id="gateMessage">동기화 키를 입력하세요.</p>
+    <input type="password" id="gateInput" placeholder="동기화 키" autocomplete="off">
+    <button class="btn" id="gateBtn">입장하기</button>
+    <div class="gate-error" id="gateError"></div>
+    <div class="gate-hint">이 키로 모든 기기의 데이터가 연결돼요. 완벽한 보안은 아니니 정말 민감한 내용은 올리지 않는 걸 추천해요.</div>
+  </div>
+</div>
+
+<div class="wrap" id="app" style="display:none;">
+  <div class="masthead">
+    <div>
+      <h1>취준 기록실</h1>
+      <div class="sub">Application Batch Log</div>
+    </div>
+    <div class="stats" id="stats"></div>
+  </div>
+
+  <div class="toolbar" style="margin-bottom:14px;">
+    <button class="btn ghost small" id="exportBtn">⇩ 데이터 내보내기</button>
+    <label class="btn ghost small" style="cursor:pointer;">
+      ⇧ 데이터 가져오기
+      <input type="file" id="importFile" accept=".json" style="display:none;">
+    </label>
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--grey);">
+      Claude에서 쓰던 예전 기록을 옮겨오려면, 예전 페이지에서 먼저 내보낸 뒤 여기서 가져오세요.
+    </span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tabRecords" data-tab="records">지원 기록</button>
+    <button class="tab-btn" id="tabScraps" data-tab="scraps">스크랩</button>
+    <button class="tab-btn" id="tabPostings" data-tab="postings">공고</button>
+  </div>
+
+  <div id="recordsView">
+    <div class="toolbar">
+      <input type="text" id="search" placeholder="회사명 또는 직무로 검색">
+      <select id="statusFilter">
+        <option value="">전체 상태</option>
+        <option value="작성중">작성중</option>
+        <option value="지원완료">지원완료</option>
+        <option value="서류전형">서류전형</option>
+        <option value="면접전형">면접전형</option>
+        <option value="최종합격">최종합격</option>
+        <option value="불합격">불합격</option>
+      </select>
+      <button class="btn" id="addBtn">+ 새 기록 추가</button>
+    </div>
+
+    <div id="loading">기록을 불러오는 중...</div>
+    <div id="grid"></div>
+  </div>
+
+  <div id="scrapsView" style="display:none;">
+    <div class="toolbar">
+      <input type="text" id="scrapSearch" placeholder="회사명 또는 제목으로 검색">
+      <select id="scrapTypeFilter">
+        <option value="">전체 유형</option>
+        <option value="기사">기사</option>
+        <option value="블로그">블로그</option>
+        <option value="채용공고">채용공고</option>
+        <option value="기타">기타</option>
+      </select>
+      <button class="btn" id="addScrapBtn">+ 새 스크랩 추가</button>
+    </div>
+
+    <div id="scrapLoading">스크랩을 불러오는 중...</div>
+    <div id="scrapGrid"></div>
+  </div>
+
+  <div id="postingsView" style="display:none;">
+    <div class="toolbar">
+      <input type="text" id="postingSearch" placeholder="회사명 또는 직무로 검색">
+      <select id="postingPlatformFilter">
+        <option value="">전체 플랫폼</option>
+        <option value="사람인">사람인</option>
+        <option value="잡코리아">잡코리아</option>
+        <option value="캐치">캐치</option>
+        <option value="인크루트">인크루트</option>
+        <option value="원티드">원티드</option>
+        <option value="링크드인">링크드인</option>
+        <option value="기업 홈페이지">기업 홈페이지</option>
+        <option value="기타">기타</option>
+      </select>
+      <button class="btn" id="addPostingBtn">+ 새 공고 추가</button>
+    </div>
+
+    <div id="postingLoading">공고를 불러오는 중...</div>
+    <div id="postingGrid"></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2 id="modalTitle">새 지원 기록</h2>
+    <div class="field">
+      <label>회사명</label>
+      <input type="text" id="f_company" placeholder="예: 대웅제약">
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>직무 / 직책</label>
+        <input type="text" id="f_position" placeholder="예: QC 사원">
+      </div>
+      <div class="field">
+        <label>상태</label>
+        <select id="f_status">
+          <option value="작성중">작성중</option>
+          <option value="지원완료">지원완료</option>
+          <option value="서류전형">서류전형</option>
+          <option value="면접전형">면접전형</option>
+          <option value="최종합격">최종합격</option>
+          <option value="불합격">불합격</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>상세 직무</label>
+      <textarea id="f_detail" placeholder="담당 업무, 자격요건, 우대사항 등을 정리해두세요"></textarea>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>지원 방법</label>
+        <input type="text" id="f_method" placeholder="예: 사이트 접수 / 이메일 / 사람인">
+      </div>
+      <div class="field">
+        <label>지원 날짜</label>
+        <input type="date" id="f_date">
+      </div>
+    </div>
+    <div class="field">
+      <label>지원 링크</label>
+      <input type="text" id="f_link" placeholder="https://...">
+    </div>
+
+    <div class="field">
+      <label>자소서 질문</label>
+      <div id="qaList"></div>
+      <button class="btn ghost small" id="addQaBtn" type="button">+ 질문 추가</button>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn ghost" id="cancelBtn">취소</button>
+      <button class="btn" id="saveBtn">저장</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="scrapOverlay">
+  <div class="modal">
+    <h2 id="scrapModalTitle">새 스크랩</h2>
+    <div class="row2">
+      <div class="field">
+        <label>회사명</label>
+        <input type="text" id="s_company" list="companyOptions" placeholder="관련 회사명">
+        <datalist id="companyOptions"></datalist>
+      </div>
+      <div class="field">
+        <label>유형</label>
+        <select id="s_type">
+          <option value="기사">기사</option>
+          <option value="블로그">블로그</option>
+          <option value="채용공고">채용공고</option>
+          <option value="기타">기타</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>제목</label>
+      <input type="text" id="s_title" placeholder="글 제목">
+    </div>
+    <div class="field">
+      <label>링크</label>
+      <input type="text" id="s_link" placeholder="https://...">
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>스크랩 날짜</label>
+        <input type="date" id="s_date">
+      </div>
+    </div>
+    <div class="field">
+      <label>메모</label>
+      <textarea id="s_memo" placeholder="왜 스크랩했는지, 요점, 인상 깊었던 부분 등을 적어두세요"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="scrapCancelBtn">취소</button>
+      <button class="btn" id="scrapSaveBtn">저장</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="postingOverlay">
+  <div class="modal">
+    <h2 id="postingModalTitle">새 공고</h2>
+    <div class="row2">
+      <div class="field">
+        <label>어디서 봤나요</label>
+        <input type="text" id="p_platform" list="platformOptions" placeholder="사람인 / 잡코리아 / 캐치 / 인크루트 등">
+        <datalist id="platformOptions">
+          <option value="사람인"><option value="잡코리아"><option value="캐치">
+          <option value="인크루트"><option value="원티드"><option value="링크드인">
+          <option value="기업 홈페이지"><option value="기타">
+        </datalist>
+      </div>
+      <div class="field">
+        <label>회사명</label>
+        <input type="text" id="p_company" list="companyOptions" placeholder="회사명">
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>직무</label>
+        <input type="text" id="p_position" placeholder="예: QC 사원">
+      </div>
+      <div class="field">
+        <label>마감일</label>
+        <input type="date" id="p_deadline">
+      </div>
+    </div>
+    <div class="field">
+      <label>공고 링크</label>
+      <input type="text" id="p_link" placeholder="https://...">
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>발견 날짜</label>
+        <input type="date" id="p_found">
+      </div>
+      <div class="field">
+        <label>지원 여부</label>
+        <select id="p_applied">
+          <option value="no">미지원</option>
+          <option value="yes">지원완료</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>메모</label>
+      <textarea id="p_memo" placeholder="자격요건, 우대사항, 눈에 띄는 부분 등을 적어두세요"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="postingCancelBtn">취소</button>
+      <button class="btn" id="postingSaveBtn">저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---- Firestore-backed sync store ----
+// This uses your "sync key" (the password you set) to build a document ID,
+// so entering the same key on any device loads the same data. See README.md
+// for how to fill in firebase-config.js.
+let syncDocRef = null;
+
+const FirestoreStore = {
+  async get(key){
+    const snap = await syncDocRef.get();
+    const data = snap.exists ? snap.data() : null;
+    return data && data[key] !== undefined ? { key, value: data[key] } : null;
+  },
+  async set(key, value){
+    await syncDocRef.set({ [key]: value }, { merge: true });
+    return { key, value };
+  }
+};
+window.storage = FirestoreStore;
+
+async function sha256(text){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+function firebaseConfigured(){
+  const cfg = window.FIREBASE_CONFIG;
+  return cfg && cfg.apiKey && !cfg.apiKey.startsWith('YOUR_');
+}
+
+function initGate(){
+  const gate = document.getElementById('gate');
+  const app = document.getElementById('app');
+  const input = document.getElementById('gateInput');
+  const btn = document.getElementById('gateBtn');
+  const msg = document.getElementById('gateMessage');
+  const err = document.getElementById('gateError');
+
+  if(!firebaseConfigured()){
+    msg.innerHTML = 'Firebase 설정이 아직 안 끝났어요.<br>README.md의 안내에 따라<br>firebase-config.js를 채워주세요.';
+    input.style.display = 'none';
+    btn.style.display = 'none';
+    return;
+  }
+
+  msg.innerHTML = '동기화 키를 입력하세요.<br>모든 기기에서 같은 키를 입력하면<br>같은 데이터를 보게 돼요.';
+  btn.textContent = '입장하기';
+
+  firebase.initializeApp(window.FIREBASE_CONFIG);
+  const db = firebase.firestore();
+  const auth = firebase.auth();
+
+  async function submit(){
+    const val = input.value;
+    if(!val || val.length < 4){
+      err.textContent = '4자 이상으로 키를 입력해주세요.';
+      return;
+    }
+    btn.disabled = true;
+    err.textContent = '';
+    try{
+      await auth.signInAnonymously();
+      const hash = await sha256(val);
+      syncDocRef = db.collection('syncData').doc(hash);
+      const snap = await syncDocRef.get();
+      const isNew = !snap.exists;
+      unlock(isNew);
+    }catch(e){
+      console.error(e);
+      err.textContent = '연결에 실패했어요. Firestore 규칙/설정을 확인해주세요.';
+      btn.disabled = false;
+    }
+  }
+
+  function unlock(isNew){
+    gate.classList.add('hidden');
+    app.style.display = '';
+    loadRecords();
+    if(isNew){
+      setTimeout(() => alert('새로운 동기화 공간을 만들었어요. 다른 기기에서도 같은 키를 입력하면 여기로 이어져요.'), 300);
+    }
+  }
+
+  btn.onclick = submit;
+  input.onkeydown = (e) => { if(e.key === 'Enter') submit(); };
+  input.focus();
+}
+initGate();
+
+
+const STORAGE_KEY = 'jobApplications';
+let records = [];
+let editingId = null;
+let deleteConfirmId = null;
+
+const STATUS_META = {
+  '작성중':   {cls:'writing',   label:'작성중'},
+  '지원완료': {cls:'applied',   label:'지원완료'},
+  '서류전형': {cls:'doc',       label:'서류전형'},
+  '면접전형': {cls:'interview', label:'면접전형'},
+  '최종합격': {cls:'pass',      label:'최종합격'},
+  '불합격':   {cls:'fail',      label:'불합격'},
+};
+
+function escapeHtml(s){
+  return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+async function loadRecords(){
+  try{
+    const res = await window.storage.get('applications');
+    records = res && res.value ? JSON.parse(res.value) : [];
+  }catch(e){
+    records = [];
+  }
+  document.getElementById('loading').style.display = 'none';
+  render();
+}
+
+async function saveRecords(){
+  try{
+    await window.storage.set('applications', JSON.stringify(records));
+  }catch(e){
+    console.error('저장 실패', e);
+    alert('저장에 실패했어요. 다시 시도해주세요.');
+  }
+}
+
+function renderStats(){
+  const total = records.length;
+  const counts = {};
+  records.forEach(r => counts[r.status] = (counts[r.status]||0)+1);
+  const chips = [`<div class="stat-chip">총 <b>${total}</b>건</div>`];
+  ['지원완료','서류전형','면접전형','최종합격','불합격'].forEach(s=>{
+    if(counts[s]) chips.push(`<div class="stat-chip">${s} <b>${counts[s]}</b></div>`);
+  });
+  document.getElementById('stats').innerHTML = chips.join('');
+}
+
+function matchesFilter(r, q, statusFilter){
+  if(statusFilter && r.status !== statusFilter) return false;
+  if(!q) return true;
+  const hay = (r.company + ' ' + r.position).toLowerCase();
+  return hay.includes(q.toLowerCase());
+}
+
+function render(){
+  renderStats();
+  const q = document.getElementById('search').value.trim();
+  const statusFilter = document.getElementById('statusFilter').value;
+  const grid = document.getElementById('grid');
+
+  const filtered = records
+    .filter(r => matchesFilter(r, q, statusFilter))
+    .sort((a,b) => (b.date||'').localeCompare(a.date||''));
+
+  if(filtered.length === 0){
+    grid.innerHTML = `<div class="empty-state">
+      <div class="big">${records.length===0 ? '아직 기록이 없어요' : '조건에 맞는 기록이 없어요'}</div>
+      <div>${records.length===0 ? '첫 지원 기록을 추가해보세요.' : '검색어나 필터를 바꿔보세요.'}</div>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map((r, idx) => {
+    const lotNo = String(records.findIndex(x=>x.id===r.id)+1).padStart(3,'0');
+    const meta = STATUS_META[r.status] || STATUS_META['작성중'];
+    const qaHtml = (r.questions||[]).map(qa => `
+      <div class="qa">
+        <div class="q">${escapeHtml(qa.q || '(질문 미입력)')}${qa.limit ? `<span class="limit">${qa.limit}자 이내</span>` : ''}</div>
+        <div class="a ${qa.a ? '' : 'empty'}">${qa.a ? escapeHtml(qa.a) : '작성한 답변이 없어요.'}</div>
+      </div>
+    `).join('') || `<div class="qa"><div class="a empty">등록된 자소서 질문이 없어요.</div></div>`;
+
+    return `
+    <div class="card" data-id="${r.id}">
+      <div class="card-top">
+        <div>
+          <span class="lot">No. ${lotNo}</span>
+          <h3 class="company">${escapeHtml(r.company || '(회사명 미입력)')}</h3>
+          <p class="position">${escapeHtml(r.position || '')}</p>
+        </div>
+        <div class="stamp ${meta.cls}">${meta.label}</div>
+      </div>
+      <div class="meta-row">
+        <span>📅 ${r.date || '날짜 미입력'}</span>
+        <span>✎ ${escapeHtml(r.method || '지원방법 미입력')}</span>
+        ${r.link ? `<span>🔗 <a href="${escapeHtml(r.link)}" target="_blank" rel="noopener">지원 링크 열기</a></span>` : ''}
+      </div>
+      <div class="card-actions">
+        <button class="btn ghost small toggle-detail" data-id="${r.id}">상세보기</button>
+        <button class="btn ghost small edit-btn" data-id="${r.id}">수정</button>
+        <button class="btn danger small del-btn" data-id="${r.id}">삭제</button>
+      </div>
+      <div class="confirm-row" id="confirm-${r.id}" style="display:none;">
+        정말 삭제할까요? 되돌릴 수 없어요.
+        <button class="btn danger small confirm-yes" data-id="${r.id}">삭제</button>
+        <button class="btn ghost small confirm-no" data-id="${r.id}">취소</button>
+      </div>
+      <div class="detail-panel" id="detail-${r.id}">
+        <div class="detail-block">
+          <h4>상세 직무</h4>
+          <p>${escapeHtml(r.detail) || '작성된 내용이 없어요.'}</p>
+        </div>
+        <div class="detail-block">
+          <h4>자소서 질문</h4>
+          ${qaHtml}
+        </div>
+      </div>
+    </div>
+    `;
+  }).join('');
+
+  attachCardEvents();
+}
+
+function attachCardEvents(){
+  document.querySelectorAll('.toggle-detail').forEach(btn=>{
+    btn.onclick = () => {
+      const id = btn.dataset.id;
+      const panel = document.getElementById('detail-'+id);
+      panel.classList.toggle('open');
+      btn.textContent = panel.classList.contains('open') ? '접기' : '상세보기';
+    };
+  });
+  document.querySelectorAll('.edit-btn').forEach(btn=>{
+    btn.onclick = () => openModal(btn.dataset.id);
+  });
+  document.querySelectorAll('.del-btn').forEach(btn=>{
+    btn.onclick = () => {
+      document.getElementById('confirm-'+btn.dataset.id).style.display = 'flex';
+    };
+  });
+  document.querySelectorAll('.confirm-no').forEach(btn=>{
+    btn.onclick = () => {
+      document.getElementById('confirm-'+btn.dataset.id).style.display = 'none';
+    };
+  });
+  document.querySelectorAll('.confirm-yes').forEach(btn=>{
+    btn.onclick = async () => {
+      records = records.filter(r => r.id !== btn.dataset.id);
+      await saveRecords();
+      render();
+    };
+  });
+}
+
+// ---- Modal / form ----
+
+function qaEditRowHtml(qa, i){
+  return `
+  <div class="qa-edit" data-idx="${i}">
+    <div class="qa-edit-top">
+      <input type="text" class="qa-q" placeholder="자소서 질문을 입력하세요" value="${escapeHtml(qa.q||'')}">
+      <input type="number" class="qa-limit" placeholder="글자수 제한" value="${qa.limit||''}">
+    </div>
+    <textarea class="qa-a" placeholder="답변 초안 (선택)">${escapeHtml(qa.a||'')}</textarea>
+    <div class="charcount"><span class="cur">0</span> / <span class="lim">-</span>자</div>
+    <button type="button" class="remove-qa">이 질문 삭제</button>
+  </div>`;
+}
+
+function renderQaList(list){
+  const container = document.getElementById('qaList');
+  container.innerHTML = list.map((qa,i)=>qaEditRowHtml(qa,i)).join('');
+  container.querySelectorAll('.qa-edit').forEach(row=>{
+    const aBox = row.querySelector('.qa-a');
+    const limitBox = row.querySelector('.qa-limit');
+    const cur = row.querySelector('.cur');
+    const lim = row.querySelector('.lim');
+    const countEl = row.querySelector('.charcount');
+    function updateCount(){
+      const len = aBox.value.length;
+      cur.textContent = len;
+      const limVal = parseInt(limitBox.value);
+      lim.textContent = limVal ? limVal : '-';
+      countEl.classList.toggle('over', !!(limVal && len > limVal));
+    }
+    aBox.addEventListener('input', updateCount);
+    limitBox.addEventListener('input', updateCount);
+    updateCount();
+    row.querySelector('.remove-qa').onclick = () => {
+      row.remove();
+    };
+  });
+}
+
+function collectQaList(){
+  return Array.from(document.querySelectorAll('.qa-edit')).map(row => ({
+    q: row.querySelector('.qa-q').value.trim(),
+    limit: row.querySelector('.qa-limit').value ? parseInt(row.querySelector('.qa-limit').value) : null,
+    a: row.querySelector('.qa-a').value.trim(),
+  })).filter(qa => qa.q || qa.a);
+}
+
+function openModal(id){
+  editingId = id || null;
+  const r = id ? records.find(x=>x.id===id) : null;
+  document.getElementById('modalTitle').textContent = r ? '기록 수정' : '새 지원 기록';
+  document.getElementById('f_company').value = r ? r.company||'' : '';
+  document.getElementById('f_position').value = r ? r.position||'' : '';
+  document.getElementById('f_status').value = r ? r.status||'작성중' : '작성중';
+  document.getElementById('f_detail').value = r ? r.detail||'' : '';
+  document.getElementById('f_method').value = r ? r.method||'' : '';
+  document.getElementById('f_date').value = r ? r.date||'' : '';
+  document.getElementById('f_link').value = r ? r.link||'' : '';
+  renderQaList(r && r.questions ? r.questions : []);
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeModal(){
+  document.getElementById('overlay').classList.remove('open');
+  editingId = null;
+}
+
+async function saveModal(){
+  const company = document.getElementById('f_company').value.trim();
+  if(!company){
+    alert('회사명을 입력해주세요.');
+    return;
+  }
+  const data = {
+    company,
+    position: document.getElementById('f_position').value.trim(),
+    status: document.getElementById('f_status').value,
+    detail: document.getElementById('f_detail').value.trim(),
+    method: document.getElementById('f_method').value.trim(),
+    date: document.getElementById('f_date').value,
+    link: document.getElementById('f_link').value.trim(),
+    questions: collectQaList(),
+  };
+
+  if(editingId){
+    const idx = records.findIndex(r=>r.id===editingId);
+    records[idx] = {...records[idx], ...data};
+  }else{
+    records.push({id: 'r'+Date.now(), ...data});
+  }
+  await saveRecords();
+  closeModal();
+  render();
+}
+
+document.getElementById('addBtn').onclick = () => openModal(null);
+document.getElementById('cancelBtn').onclick = closeModal;
+document.getElementById('saveBtn').onclick = saveModal;
+document.getElementById('addQaBtn').onclick = () => {
+  renderQaList(collectQaList().concat([{}]));
+};
+document.getElementById('overlay').onclick = (e) => {
+  if(e.target.id === 'overlay') closeModal();
+};
+document.getElementById('search').oninput = render;
+document.getElementById('statusFilter').onchange = render;
+
+// loadRecords() is now triggered from unlock() once Firestore auth succeeds.
+
+// ---- Tabs ----
+document.getElementById('tabRecords').onclick = () => switchTab('records');
+document.getElementById('tabScraps').onclick = () => switchTab('scraps');
+document.getElementById('tabPostings').onclick = () => switchTab('postings');
+
+function switchTab(tab){
+  document.getElementById('tabRecords').classList.toggle('active', tab==='records');
+  document.getElementById('tabScraps').classList.toggle('active', tab==='scraps');
+  document.getElementById('tabPostings').classList.toggle('active', tab==='postings');
+  document.getElementById('recordsView').style.display = tab==='records' ? '' : 'none';
+  document.getElementById('scrapsView').style.display = tab==='scraps' ? '' : 'none';
+  document.getElementById('postingsView').style.display = tab==='postings' ? '' : 'none';
+  if(tab==='scraps' && !scrapsLoaded) loadScraps();
+  if(tab==='postings' && !postingsLoaded) loadPostings();
+}
+
+// ---- Scraps ----
+let scraps = [];
+let editingScrapId = null;
+let scrapsLoaded = false;
+
+const TYPE_LIST = ['기사','블로그','채용공고','기타'];
+
+async function loadScraps(){
+  try{
+    const res = await window.storage.get('scraps');
+    scraps = res && res.value ? JSON.parse(res.value) : [];
+  }catch(e){
+    scraps = [];
+  }
+  scrapsLoaded = true;
+  document.getElementById('scrapLoading').style.display = 'none';
+  renderScraps();
+}
+
+async function saveScraps(){
+  try{
+    await window.storage.set('scraps', JSON.stringify(scraps));
+  }catch(e){
+    console.error('저장 실패', e);
+    alert('저장에 실패했어요. 다시 시도해주세요.');
+  }
+}
+
+function updateCompanyOptions(){
+  const names = Array.from(new Set(records.map(r=>r.company).filter(Boolean)));
+  document.getElementById('companyOptions').innerHTML = names.map(n=>`<option value="${escapeHtml(n)}">`).join('');
+}
+
+function matchesScrapFilter(s, q, typeFilter){
+  if(typeFilter && s.type !== typeFilter) return false;
+  if(!q) return true;
+  const hay = (s.company + ' ' + s.title).toLowerCase();
+  return hay.includes(q.toLowerCase());
+}
+
+function renderScraps(){
+  const q = document.getElementById('scrapSearch').value.trim();
+  const typeFilter = document.getElementById('scrapTypeFilter').value;
+  const grid = document.getElementById('scrapGrid');
+
+  const filtered = scraps
+    .filter(s => matchesScrapFilter(s, q, typeFilter))
+    .sort((a,b) => (b.date||'').localeCompare(a.date||''));
+
+  if(filtered.length === 0){
+    grid.innerHTML = `<div class="empty-state">
+      <div class="big">${scraps.length===0 ? '아직 스크랩이 없어요' : '조건에 맞는 스크랩이 없어요'}</div>
+      <div>${scraps.length===0 ? '관심 있는 기사나 블로그 글을 저장해보세요.' : '검색어나 필터를 바꿔보세요.'}</div>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = `<div style="display:flex;flex-direction:column;gap:12px;">` + filtered.map(s => `
+    <div class="scrap-card" data-id="${s.id}">
+      <div class="scrap-top">
+        <div>
+          ${s.company ? `<span class="scrap-company">${escapeHtml(s.company)}</span>` : ''}
+          <h3 class="scrap-title">${s.link ? `<a href="${escapeHtml(s.link)}" target="_blank" rel="noopener">${escapeHtml(s.title || '(제목 없음)')}</a>` : escapeHtml(s.title || '(제목 없음)')}</h3>
+        </div>
+        <span class="type-badge ${s.type}">${s.type}</span>
+      </div>
+      ${s.memo ? `<p class="scrap-memo">${escapeHtml(s.memo)}</p>` : ''}
+      <div class="scrap-bottom">
+        <span class="scrap-date">${s.date || ''}</span>
+        <div class="scrap-actions">
+          <button class="btn ghost small scrap-edit-btn" data-id="${s.id}">수정</button>
+          <button class="btn danger small scrap-del-btn" data-id="${s.id}">삭제</button>
+        </div>
+      </div>
+      <div class="confirm-row" id="scrap-confirm-${s.id}" style="display:none;">
+        정말 삭제할까요? 되돌릴 수 없어요.
+        <button class="btn danger small scrap-confirm-yes" data-id="${s.id}">삭제</button>
+        <button class="btn ghost small scrap-confirm-no" data-id="${s.id}">취소</button>
+      </div>
+    </div>
+  `).join('') + `</div>`;
+
+  attachScrapEvents();
+}
+
+function attachScrapEvents(){
+  document.querySelectorAll('.scrap-edit-btn').forEach(btn=>{
+    btn.onclick = () => openScrapModal(btn.dataset.id);
+  });
+  document.querySelectorAll('.scrap-del-btn').forEach(btn=>{
+    btn.onclick = () => {
+      document.getElementById('scrap-confirm-'+btn.dataset.id).style.display = 'flex';
+    };
+  });
+  document.querySelectorAll('.scrap-confirm-no').forEach(btn=>{
+    btn.onclick = () => {
+      document.getElementById('scrap-confirm-'+btn.dataset.id).style.display = 'none';
+    };
+  });
+  document.querySelectorAll('.scrap-confirm-yes').forEach(btn=>{
+    btn.onclick = async () => {
+      scraps = scraps.filter(s => s.id !== btn.dataset.id);
+      await saveScraps();
+      renderScraps();
+    };
+  });
+}
+
+function openScrapModal(id){
+  editingScrapId = id || null;
+  const s = id ? scraps.find(x=>x.id===id) : null;
+  updateCompanyOptions();
+  document.getElementById('scrapModalTitle').textContent = s ? '스크랩 수정' : '새 스크랩';
+  document.getElementById('s_company').value = s ? s.company||'' : '';
+  document.getElementById('s_type').value = s ? s.type||'기사' : '기사';
+  document.getElementById('s_title').value = s ? s.title||'' : '';
+  document.getElementById('s_link').value = s ? s.link||'' : '';
+  document.getElementById('s_date').value = s ? s.date||'' : new Date().toISOString().slice(0,10);
+  document.getElementById('s_memo').value = s ? s.memo||'' : '';
+  document.getElementById('scrapOverlay').classList.add('open');
+}
+
+function closeScrapModal(){
+  document.getElementById('scrapOverlay').classList.remove('open');
+  editingScrapId = null;
+}
+
+async function saveScrapModal(){
+  const title = document.getElementById('s_title').value.trim();
+  const link = document.getElementById('s_link').value.trim();
+  if(!title && !link){
+    alert('제목이나 링크 중 하나는 입력해주세요.');
+    return;
+  }
+  const data = {
+    company: document.getElementById('s_company').value.trim(),
+    type: document.getElementById('s_type').value,
+    title,
+    link,
+    date: document.getElementById('s_date').value,
+    memo: document.getElementById('s_memo').value.trim(),
+  };
+  if(editingScrapId){
+    const idx = scraps.findIndex(s=>s.id===editingScrapId);
+    scraps[idx] = {...scraps[idx], ...data};
+  }else{
+    scraps.push({id:'s'+Date.now(), ...data});
+  }
+  await saveScraps();
+  closeScrapModal();
+  renderScraps();
+}
+
+document.getElementById('addScrapBtn').onclick = () => openScrapModal(null);
+document.getElementById('scrapCancelBtn').onclick = closeScrapModal;
+document.getElementById('scrapSaveBtn').onclick = saveScrapModal;
+document.getElementById('scrapOverlay').onclick = (e) => {
+  if(e.target.id === 'scrapOverlay') closeScrapModal();
+};
+document.getElementById('scrapSearch').oninput = renderScraps;
+document.getElementById('scrapTypeFilter').onchange = renderScraps;
+
+// ---- Postings (job listings found on platforms) ----
+let postings = [];
+let editingPostingId = null;
+let postingsLoaded = false;
+
+async function loadPostings(){
+  try{
+    const res = await window.storage.get('postings');
+    postings = res && res.value ? JSON.parse(res.value) : [];
+  }catch(e){
+    postings = [];
+  }
+  postingsLoaded = true;
+  document.getElementById('postingLoading').style.display = 'none';
+  renderPostings();
+}
+
+async function savePostings(){
+  try{
+    await window.storage.set('postings', JSON.stringify(postings));
+  }catch(e){
+    console.error('저장 실패', e);
+    alert('저장에 실패했어요. 다시 시도해주세요.');
+  }
+}
+
+function matchesPostingFilter(p, q, platformFilter){
+  if(platformFilter && p.platform !== platformFilter) return false;
+  if(!q) return true;
+  const hay = (p.company + ' ' + p.position).toLowerCase();
+  return hay.includes(q.toLowerCase());
+}
+
+function deadlineInfo(deadline){
+  if(!deadline) return {cls:'ok', label:'상시/미정'};
+  const today = new Date(); today.setHours(0,0,0,0);
+  const d = new Date(deadline);
+  const diffDays = Math.round((d - today) / 86400000);
+  if(diffDays < 0) return {cls:'over', label:'마감됨'};
+  if(diffDays === 0) return {cls:'soon', label:'오늘 마감'};
+  if(diffDays <= 3) return {cls:'soon', label:`D-${diffDays}`};
+  return {cls:'ok', label:`D-${diffDays}`};
+}
+
+function renderPostings(){
+  const q = document.getElementById('postingSearch').value.trim();
+  const platformFilter = document.getElementById('postingPlatformFilter').value;
+  const grid = document.getElementById('postingGrid');
+
+  const filtered = postings
+    .filter(p => matchesPostingFilter(p, q, platformFilter))
+    .sort((a,b) => (a.deadline||'9999').localeCompare(b.deadline||'9999'));
+
+  if(filtered.length === 0){
+    grid.innerHTML = `<div class="empty-state">
+      <div class="big">${postings.length===0 ? '아직 등록된 공고가 없어요' : '조건에 맞는 공고가 없어요'}</div>
+      <div>${postings.length===0 ? '사람인, 잡코리아 등에서 본 공고를 등록해보세요.' : '검색어나 필터를 바꿔보세요.'}</div>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = `<div style="display:flex;flex-direction:column;gap:12px;">` + filtered.map(p => {
+    const dl = deadlineInfo(p.deadline);
+    return `
+    <div class="posting-card" data-id="${p.id}">
+      <div class="posting-top">
+        <div>
+          <span class="platform-badge">${escapeHtml(p.platform || '기타')}</span>
+          <div class="posting-company">${escapeHtml(p.company || '(회사명 미입력)')}</div>
+          <p class="posting-position">${escapeHtml(p.position || '')}</p>
+        </div>
+        <span class="deadline ${dl.cls}">${dl.label}</span>
+      </div>
+      <div class="posting-meta">
+        <span>발견 ${p.found || '날짜 미입력'}</span>
+        ${p.deadline ? `<span>마감 ${p.deadline}</span>` : ''}
+        ${p.link ? `<span><a href="${escapeHtml(p.link)}" target="_blank" rel="noopener">공고 보기</a></span>` : ''}
+      </div>
+      ${p.memo ? `<p class="posting-memo">${escapeHtml(p.memo)}</p>` : ''}
+      <div class="posting-actions">
+        <button class="applied-toggle ${p.applied==='yes' ? 'on' : ''} toggle-applied" data-id="${p.id}">${p.applied==='yes' ? '지원완료' : '미지원'}</button>
+        <div class="right">
+          <button class="btn ghost small posting-edit-btn" data-id="${p.id}">수정</button>
+          <button class="btn danger small posting-del-btn" data-id="${p.id}">삭제</button>
+        </div>
+      </div>
+      <div class="confirm-row" id="posting-confirm-${p.id}" style="display:none;">
+        정말 삭제할까요? 되돌릴 수 없어요.
+        <button class="btn danger small posting-confirm-yes" data-id="${p.id}">삭제</button>
+        <button class="btn ghost small posting-confirm-no" data-id="${p.id}">취소</button>
+      </div>
+    </div>
+    `;
+  }).join('') + `</div>`;
+
+  attachPostingEvents();
+}
+
+function attachPostingEvents(){
+  document.querySelectorAll('.toggle-applied').forEach(btn=>{
+    btn.onclick = async () => {
+      const p = postings.find(x=>x.id===btn.dataset.id);
+      p.applied = p.applied === 'yes' ? 'no' : 'yes';
+      await savePostings();
+      renderPostings();
+    };
+  });
+  document.querySelectorAll('.posting-edit-btn').forEach(btn=>{
+    btn.onclick = () => openPostingModal(btn.dataset.id);
+  });
+  document.querySelectorAll('.posting-del-btn').forEach(btn=>{
+    btn.onclick = () => {
+      document.getElementById('posting-confirm-'+btn.dataset.id).style.display = 'flex';
+    };
+  });
+  document.querySelectorAll('.posting-confirm-no').forEach(btn=>{
+    btn.onclick = () => {
+      document.getElementById('posting-confirm-'+btn.dataset.id).style.display = 'none';
+    };
+  });
+  document.querySelectorAll('.posting-confirm-yes').forEach(btn=>{
+    btn.onclick = async () => {
+      postings = postings.filter(p => p.id !== btn.dataset.id);
+      await savePostings();
+      renderPostings();
+    };
+  });
+}
+
+function openPostingModal(id){
+  editingPostingId = id || null;
+  const p = id ? postings.find(x=>x.id===id) : null;
+  updateCompanyOptions();
+  document.getElementById('postingModalTitle').textContent = p ? '공고 수정' : '새 공고';
+  document.getElementById('p_platform').value = p ? p.platform||'' : '';
+  document.getElementById('p_company').value = p ? p.company||'' : '';
+  document.getElementById('p_position').value = p ? p.position||'' : '';
+  document.getElementById('p_deadline').value = p ? p.deadline||'' : '';
+  document.getElementById('p_link').value = p ? p.link||'' : '';
+  document.getElementById('p_found').value = p ? p.found||'' : new Date().toISOString().slice(0,10);
+  document.getElementById('p_applied').value = p ? p.applied||'no' : 'no';
+  document.getElementById('p_memo').value = p ? p.memo||'' : '';
+  document.getElementById('postingOverlay').classList.add('open');
+}
+
+function closePostingModal(){
+  document.getElementById('postingOverlay').classList.remove('open');
+  editingPostingId = null;
+}
+
+async function savePostingModal(){
+  const company = document.getElementById('p_company').value.trim();
+  if(!company){
+    alert('회사명을 입력해주세요.');
+    return;
+  }
+  const data = {
+    platform: document.getElementById('p_platform').value.trim(),
+    company,
+    position: document.getElementById('p_position').value.trim(),
+    deadline: document.getElementById('p_deadline').value,
+    link: document.getElementById('p_link').value.trim(),
+    found: document.getElementById('p_found').value,
+    applied: document.getElementById('p_applied').value,
+    memo: document.getElementById('p_memo').value.trim(),
+  };
+  if(editingPostingId){
+    const idx = postings.findIndex(p=>p.id===editingPostingId);
+    postings[idx] = {...postings[idx], ...data};
+  }else{
+    postings.push({id:'p'+Date.now(), ...data});
+  }
+  await savePostings();
+  closePostingModal();
+  renderPostings();
+}
+
+document.getElementById('addPostingBtn').onclick = () => openPostingModal(null);
+document.getElementById('postingCancelBtn').onclick = closePostingModal;
+document.getElementById('postingSaveBtn').onclick = savePostingModal;
+document.getElementById('postingOverlay').onclick = (e) => {
+  if(e.target.id === 'postingOverlay') closePostingModal();
+};
+document.getElementById('postingSearch').oninput = renderPostings;
+document.getElementById('postingPlatformFilter').onchange = renderPostings;
+
+// ---- Export / Import (for moving data between the Claude version and this standalone app) ----
+document.getElementById('exportBtn').onclick = async () => {
+  const bundle = {
+    applications: records,
+    scraps: scraps,
+    postings: postings,
+    exportedAt: new Date().toISOString(),
+  };
+  const blob = new Blob([JSON.stringify(bundle, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `취준기록실_백업_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+document.getElementById('importFile').onchange = async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  try{
+    const text = await file.text();
+    const bundle = JSON.parse(text);
+    if(bundle.applications) records = bundle.applications;
+    if(bundle.scraps) scraps = bundle.scraps;
+    if(bundle.postings) postings = bundle.postings;
+    await saveRecords();
+    await saveScraps();
+    await savePostings();
+    render();
+    if(scrapsLoaded) renderScraps();
+    if(postingsLoaded) renderPostings();
+    alert('가져오기가 완료됐어요!');
+  }catch(err){
+    alert('파일을 읽는 데 실패했어요. 올바른 백업 파일인지 확인해주세요.');
+  }
+  e.target.value = '';
+};
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
