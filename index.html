@@ -20,8 +20,8 @@
 <style>
   :root{
     --paper:#0E0B0F;
-    --ink:#F6ECF1;
-    --ink-soft:#C79FB8;
+    --ink:#FFFFFF;
+    --ink-soft:#FFFFFF;
     --card:#18131A;
     --line:#3A2C36;
     --teal:#FF4FA3;
@@ -32,7 +32,7 @@
     --blue-soft:#34202C;
     --red:#9A5470;
     --red-soft:#2B1A22;
-    --grey:#8C8290;
+    --grey:#FFFFFF;
     --grey-soft:#221C25;
   }
   *{box-sizing:border-box;}
@@ -52,16 +52,16 @@
     padding-bottom:16px;margin-bottom:20px;flex-wrap:wrap;gap:14px;
   }
   .masthead h1{
-    font-family:'Nanum Pen Script', cursive;
+    font-family:'Gaegu', sans-serif;
     font-weight:700;font-size:30px;margin:0;letter-spacing:-0.5px;
   }
   .masthead .sub{
-    font-family:'IBM Plex Mono', monospace;font-size:11px;color:var(--ink-soft);
+    font-family:'Gaegu', sans-serif;font-size:11px;color:var(--ink-soft);
     letter-spacing:1px;text-transform:uppercase;margin-top:4px;
   }
   .stats{display:flex;gap:8px;flex-wrap:wrap;}
   .stat-chip{
-    font-family:'IBM Plex Mono', monospace;font-size:11.5px;
+    font-family:'Gaegu', sans-serif;font-size:11.5px;
     border:1px solid var(--line);background:var(--card);
     padding:6px 10px;border-radius:20px;display:flex;gap:6px;align-items:center;white-space:nowrap;
   }
@@ -93,15 +93,15 @@
   }
   .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;}
   .lot{
-    font-family:'IBM Plex Mono', monospace;font-size:11px;color:var(--grey);
+    font-family:'Gaegu', sans-serif;font-size:11px;color:var(--grey);
     letter-spacing:1px;margin-bottom:6px;display:block;
   }
   .company{
-    font-family:'Nanum Pen Script', cursive;font-weight:700;font-size:21px;margin:0 0 3px;
+    font-family:'Gaegu', sans-serif;font-weight:700;font-size:21px;margin:0 0 3px;
   }
   .position{font-size:13.5px;color:var(--ink-soft);margin:0;}
   .stamp{
-    font-family:'IBM Plex Mono', monospace;font-weight:600;font-size:11px;
+    font-family:'Gaegu', sans-serif;font-weight:600;font-size:11px;
     letter-spacing:1.5px;text-transform:uppercase;padding:5px 11px;
     border-radius:20px;border:1.5px dashed currentColor;white-space:nowrap;
     transform:rotate(-2deg);flex-shrink:0;
@@ -115,7 +115,7 @@
 
   .meta-row{
     display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;
-    font-family:'IBM Plex Mono', monospace;font-size:12px;color:var(--ink-soft);
+    font-family:'Gaegu', sans-serif;font-size:12px;color:var(--ink-soft);
   }
   .meta-row span{display:flex;align-items:center;gap:5px;}
   .meta-row a{color:var(--teal);text-decoration:none;border-bottom:1px solid var(--teal);}
@@ -134,7 +134,7 @@
   .detail-block p{font-size:14px;line-height:1.6;margin:0 0 16px;white-space:pre-wrap;}
   .qa{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:10px;}
   .qa .q{font-weight:700;font-size:13.5px;margin-bottom:4px;}
-  .qa .limit{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--grey);margin-left:6px;}
+  .qa .limit{font-family:'Gaegu', sans-serif;font-size:11px;color:var(--grey);margin-left:6px;}
   .qa .a{font-size:13.5px;line-height:1.6;color:var(--ink-soft);white-space:pre-wrap;margin-top:6px;}
   .qa .a.empty{color:var(--grey);font-style:italic;}
 
@@ -144,7 +144,7 @@
     text-align:center;padding:70px 20px;color:var(--ink-soft);
     border:1px dashed var(--line);border-radius:12px;background:var(--card);
   }
-  .empty-state .big{font-family:'Nanum Pen Script', cursive;font-size:20px;color:var(--ink);margin-bottom:8px;}
+  .empty-state .big{font-family:'Gaegu', sans-serif;font-size:20px;color:var(--ink);margin-bottom:8px;}
 
   /* modal */
   .overlay{
@@ -156,7 +156,7 @@
     background:var(--paper);border-radius:14px;max-width:640px;width:100%;
     max-height:88vh;overflow-y:auto;padding:26px 28px 30px;border:1px solid var(--line);
   }
-  .modal h2{font-family:'Nanum Pen Script', cursive;font-size:22px;margin:0 0 18px;}
+  .modal h2{font-family:'Gaegu', sans-serif;font-size:22px;margin:0 0 18px;}
   .field{margin-bottom:14px;}
   .field label{
     display:block;font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:5px;
@@ -172,12 +172,12 @@
   .qa-edit-top{display:flex;gap:10px;margin-bottom:8px;}
   .qa-edit-top input[type="text"]{flex:1;}
   .qa-edit-top input[type="number"]{width:120px;}
-  .charcount{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--grey);text-align:right;margin-top:3px;}
+  .charcount{font-family:'Gaegu', sans-serif;font-size:11px;color:var(--grey);text-align:right;margin-top:3px;}
   .charcount.over{color:var(--red);}
   .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;position:sticky;bottom:0;background:var(--paper);padding-top:8px;}
   .remove-qa{background:transparent;border:none;color:var(--red);font-size:12px;cursor:pointer;font-weight:700;}
 
-  #loading, #scrapLoading{text-align:center;padding:60px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;font-size:12px;}
+  #loading, #scrapLoading{text-align:center;padding:60px;color:var(--ink-soft);font-family:'Gaegu', sans-serif;font-size:12px;}
 
   /* tabs */
   .tabs{display:flex;gap:6px;margin-bottom:22px;border-bottom:1px solid var(--line);}
@@ -195,14 +195,14 @@
   }
   .scrap-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
   .scrap-company{
-    font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--teal);
+    font-family:'Gaegu', sans-serif;font-size:11px;color:var(--teal);
     text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;display:block;
   }
   .scrap-title{margin:0;font-size:15.5px;font-weight:700;line-height:1.4;}
   .scrap-title a{color:var(--ink);text-decoration:none;}
   .scrap-title a:hover{text-decoration:underline;}
   .type-badge{
-    font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;
+    font-family:'Gaegu', sans-serif;font-size:10.5px;font-weight:600;
     padding:4px 9px;border-radius:20px;white-space:nowrap;letter-spacing:0.5px;
   }
   .type-badge.기사{background:var(--blue-soft);color:var(--blue);}
@@ -211,7 +211,7 @@
   .type-badge.기타{background:var(--grey-soft);color:var(--grey);}
   .scrap-memo{font-size:13.5px;line-height:1.6;color:var(--ink-soft);white-space:pre-wrap;margin:0;}
   .scrap-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:4px;}
-  .scrap-date{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--grey);}
+  .scrap-date{font-family:'Gaegu', sans-serif;font-size:11.5px;color:var(--grey);}
   .scrap-actions{display:flex;gap:8px;}
 
   /* posting cards */
@@ -221,14 +221,14 @@
   }
   .posting-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
   .platform-badge{
-    font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;
+    font-family:'Gaegu', sans-serif;font-size:10.5px;font-weight:600;
     padding:4px 9px;border-radius:20px;white-space:nowrap;letter-spacing:0.5px;
     background:var(--blue-soft);color:var(--blue);
   }
-  .posting-company{font-family:'Nanum Pen Script', cursive;font-weight:700;font-size:18px;margin:8px 0 2px;}
+  .posting-company{font-family:'Gaegu', sans-serif;font-weight:700;font-size:18px;margin:8px 0 2px;}
   .posting-position{font-size:13.5px;color:var(--ink-soft);margin:0;}
   .deadline{
-    font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;
+    font-family:'Gaegu', sans-serif;font-size:11.5px;font-weight:600;
     padding:4px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;
   }
   .deadline.ok{background:var(--teal-soft);color:var(--teal);}
@@ -236,7 +236,7 @@
   .deadline.over{background:var(--grey-soft);color:var(--grey);}
   .posting-meta{
     display:flex;gap:16px;margin-top:10px;flex-wrap:wrap;
-    font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);
+    font-family:'Gaegu', sans-serif;font-size:12px;color:var(--ink-soft);
   }
   .posting-meta a{color:var(--teal);text-decoration:none;border-bottom:1px solid var(--teal);}
   .posting-memo{font-size:13.5px;line-height:1.6;color:var(--ink-soft);white-space:pre-wrap;margin:10px 0 0;}
@@ -248,6 +248,7 @@
   .applied-toggle.on{background:var(--teal);color:#fff;border-color:var(--teal);}
   .posting-actions{display:flex;justify-content:space-between;align-items:center;margin-top:14px;flex-wrap:wrap;gap:8px;}
   .posting-actions .right{display:flex;gap:8px;}
+  .select-check{width:18px;height:18px;margin-top:2px;accent-color:var(--teal);cursor:pointer;flex-shrink:0;}
 
   /* password gate */
   #gate{
@@ -256,7 +257,7 @@
   }
   #gate.hidden{display:none;}
   .gate-box{max-width:360px;width:100%;text-align:center;}
-  .gate-box h1{font-family:'Nanum Pen Script',cursive;font-size:44px;color:var(--teal);margin:0 0 6px;}
+  .gate-box h1{font-family:'Gaegu', sans-serif;font-size:44px;color:var(--teal);margin:0 0 6px;}
   .gate-box p{font-size:14px;color:var(--ink-soft);margin:0 0 22px;line-height:1.6;}
   .gate-box input{
     width:100%;font-family:'Gaegu',sans-serif;font-size:16px;text-align:center;
@@ -265,7 +266,7 @@
   }
   .gate-box .btn{width:100%;padding:12px;font-size:14px;}
   .gate-error{color:var(--amber);font-size:12.5px;margin-top:8px;min-height:16px;}
-  .gate-hint{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--grey);margin-top:18px;}
+  .gate-hint{font-family:'Gaegu', sans-serif;font-size:10.5px;color:var(--grey);margin-top:18px;}
 </style>
 </head>
 <body>
@@ -297,7 +298,8 @@
       <input type="file" id="importFile" accept=".json" style="display:none;">
     </label>
     <button class="btn ghost small" id="printScrapsBtn">🖨 스크랩·공고 인쇄</button>
-    <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--grey);">
+    <span id="selectionCount" style="font-family:'Gaegu', sans-serif;font-size:11px;color:var(--teal);"></span>
+    <span style="font-family:'Gaegu', sans-serif;font-size:11px;color:var(--grey);">
       Claude에서 쓰던 예전 기록을 옮겨오려면, 예전 페이지에서 먼저 내보낸 뒤 여기서 가져오세요.
     </span>
   </div>
@@ -528,6 +530,8 @@
 // so entering the same key on any device loads the same data. See README.md
 // for how to fill in firebase-config.js.
 let syncDocRef = null;
+let selectedScrapIds = new Set();
+let selectedPostingIds = new Set();
 
 const FirestoreStore = {
   async get(key){
@@ -955,9 +959,12 @@ function renderScraps(){
   grid.innerHTML = `<div style="display:flex;flex-direction:column;gap:12px;">` + filtered.map(s => `
     <div class="scrap-card" data-id="${s.id}">
       <div class="scrap-top">
-        <div>
-          ${s.company ? `<span class="scrap-company">${escapeHtml(s.company)}</span>` : ''}
-          <h3 class="scrap-title">${s.link ? `<a href="${escapeHtml(s.link)}" target="_blank" rel="noopener">${escapeHtml(s.title || '(제목 없음)')}</a>` : escapeHtml(s.title || '(제목 없음)')}</h3>
+        <div style="display:flex;gap:10px;align-items:flex-start;">
+          <input type="checkbox" class="select-check scrap-select" data-id="${s.id}" ${selectedScrapIds.has(s.id) ? 'checked' : ''}>
+          <div>
+            ${s.company ? `<span class="scrap-company">${escapeHtml(s.company)}</span>` : ''}
+            <h3 class="scrap-title">${s.link ? `<a href="${escapeHtml(s.link)}" target="_blank" rel="noopener">${escapeHtml(s.title || '(제목 없음)')}</a>` : escapeHtml(s.title || '(제목 없음)')}</h3>
+          </div>
         </div>
         <span class="type-badge ${s.type}">${s.type}</span>
       </div>
@@ -981,6 +988,13 @@ function renderScraps(){
 }
 
 function attachScrapEvents(){
+  document.querySelectorAll('.scrap-select').forEach(cb=>{
+    cb.onchange = () => {
+      if(cb.checked) selectedScrapIds.add(cb.dataset.id);
+      else selectedScrapIds.delete(cb.dataset.id);
+      updateSelectionCount();
+    };
+  });
   document.querySelectorAll('.scrap-edit-btn').forEach(btn=>{
     btn.onclick = () => openScrapModal(btn.dataset.id);
   });
@@ -1123,10 +1137,13 @@ function renderPostings(){
     return `
     <div class="posting-card" data-id="${p.id}">
       <div class="posting-top">
-        <div>
-          <span class="platform-badge">${escapeHtml(p.platform || '기타')}</span>
-          <div class="posting-company">${escapeHtml(p.company || '(회사명 미입력)')}</div>
-          <p class="posting-position">${escapeHtml(p.position || '')}</p>
+        <div style="display:flex;gap:10px;align-items:flex-start;">
+          <input type="checkbox" class="select-check posting-select" data-id="${p.id}" ${selectedPostingIds.has(p.id) ? 'checked' : ''}>
+          <div>
+            <span class="platform-badge">${escapeHtml(p.platform || '기타')}</span>
+            <div class="posting-company">${escapeHtml(p.company || '(회사명 미입력)')}</div>
+            <p class="posting-position">${escapeHtml(p.position || '')}</p>
+          </div>
         </div>
         <span class="deadline ${dl.cls}">${dl.label}</span>
       </div>
@@ -1156,6 +1173,13 @@ function renderPostings(){
 }
 
 function attachPostingEvents(){
+  document.querySelectorAll('.posting-select').forEach(cb=>{
+    cb.onchange = () => {
+      if(cb.checked) selectedPostingIds.add(cb.dataset.id);
+      else selectedPostingIds.delete(cb.dataset.id);
+      updateSelectionCount();
+    };
+  });
   document.querySelectorAll('.toggle-applied').forEach(btn=>{
     btn.onclick = async () => {
       const p = postings.find(x=>x.id===btn.dataset.id);
@@ -1288,14 +1312,23 @@ if('serviceWorker' in navigator){
   });
 }
 
-// ---- Print: 스크랩 + 공고 모음 ----
+function updateSelectionCount(){
+  const n = selectedScrapIds.size + selectedPostingIds.size;
+  document.getElementById('selectionCount').textContent = n > 0 ? `${n}개 선택됨` : '';
+}
+
+// ---- Print: 스크랩 + 공고 모음 (선택된 항목만, 없으면 전체) ----
 document.getElementById('printScrapsBtn').onclick = async () => {
   if(!scrapsLoaded) await loadScraps();
   if(!postingsLoaded) await loadPostings();
 
+  const hasSelection = selectedScrapIds.size > 0 || selectedPostingIds.size > 0;
+  const scrapSource = hasSelection ? scraps.filter(s => selectedScrapIds.has(s.id)) : scraps;
+  const postingSource = hasSelection ? postings.filter(p => selectedPostingIds.has(p.id)) : postings;
+
   const today = new Date().toLocaleDateString('ko-KR');
 
-  const scrapRows = scraps
+  const scrapRows = scrapSource
     .slice()
     .sort((a,b) => (b.date||'').localeCompare(a.date||''))
     .map(s => `
@@ -1309,9 +1342,9 @@ document.getElementById('printScrapsBtn').onclick = async () => {
         ${s.link ? `<div class="p-link">${escapeHtml(s.link)}</div>` : ''}
         ${s.memo ? `<div class="p-memo">${escapeHtml(s.memo)}</div>` : ''}
       </div>
-    `).join('') || '<p class="p-empty">등록된 스크랩이 없어요.</p>';
+    `).join('') || '<p class="p-empty">해당하는 스크랩이 없어요.</p>';
 
-  const postingRows = postings
+  const postingRows = postingSource
     .slice()
     .sort((a,b) => (a.deadline||'9999').localeCompare(b.deadline||'9999'))
     .map(p => `
@@ -1326,7 +1359,7 @@ document.getElementById('printScrapsBtn').onclick = async () => {
         ${p.memo ? `<div class="p-memo">${escapeHtml(p.memo)}</div>` : ''}
         <div class="p-status">${p.applied === 'yes' ? '지원완료' : '미지원'} · 발견 ${p.found || ''}</div>
       </div>
-    `).join('') || '<p class="p-empty">등록된 공고가 없어요.</p>';
+    `).join('') || '<p class="p-empty">해당하는 공고가 없어요.</p>';
 
   const printHtml = `
   <!DOCTYPE html>
@@ -1350,10 +1383,10 @@ document.getElementById('printScrapsBtn').onclick = async () => {
   </style></head>
   <body>
     <h1>취준 기록실 — 스크랩·공고 모음</h1>
-    <div class="meta">인쇄일: ${today}</div>
-    <h2>스크랩 (${scraps.length}건)</h2>
+    <div class="meta">인쇄일: ${today}${hasSelection ? ' · 선택한 항목만 인쇄' : ' · 전체 인쇄'}</div>
+    <h2>스크랩 (${scrapSource.length}건)</h2>
     ${scrapRows}
-    <h2>공고 (${postings.length}건)</h2>
+    <h2>공고 (${postingSource.length}건)</h2>
     ${postingRows}
   </body></html>`;
 
