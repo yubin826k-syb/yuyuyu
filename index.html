@@ -304,6 +304,15 @@
     </span>
   </div>
 
+  <div class="toolbar" style="margin-bottom:22px;">
+    <span style="font-family:'Gaegu', sans-serif;font-size:12.5px;">등록 날짜로 선택:</span>
+    <input type="date" id="rangeFrom" style="width:130px;">
+    <span style="font-family:'Gaegu', sans-serif;">~</span>
+    <input type="date" id="rangeTo" style="width:130px;">
+    <button class="btn ghost small" id="rangeSelectBtn">이 기간 항목 선택</button>
+    <button class="btn ghost small" id="clearSelectBtn">선택 초기화</button>
+  </div>
+
   <div class="tabs">
     <button class="tab-btn active" id="tabRecords" data-tab="records">지원 기록</button>
     <button class="tab-btn" id="tabScraps" data-tab="scraps">스크랩</button>
@@ -1311,6 +1320,41 @@ if('serviceWorker' in navigator){
     navigator.serviceWorker.register('sw.js').catch(()=>{});
   });
 }
+
+document.getElementById('rangeSelectBtn').onclick = async () => {
+  const from = document.getElementById('rangeFrom').value;
+  const to = document.getElementById('rangeTo').value;
+  if(!from && !to){
+    alert('시작일 또는 종료일을 하나 이상 입력해주세요.');
+    return;
+  }
+  if(!scrapsLoaded) await loadScraps();
+  if(!postingsLoaded) await loadPostings();
+
+  const inRange = (dateStr) => {
+    if(!dateStr) return false;
+    if(from && dateStr < from) return false;
+    if(to && dateStr > to) return false;
+    return true;
+  };
+
+  let count = 0;
+  scraps.forEach(s => { if(inRange(s.date)){ selectedScrapIds.add(s.id); count++; } });
+  postings.forEach(p => { if(inRange(p.found)){ selectedPostingIds.add(p.id); count++; } });
+
+  if(scrapsLoaded) renderScraps();
+  if(postingsLoaded) renderPostings();
+  updateSelectionCount();
+  alert(count > 0 ? `${count}개 항목을 선택했어요.` : '해당 기간에 등록된 항목이 없어요.');
+};
+
+document.getElementById('clearSelectBtn').onclick = () => {
+  selectedScrapIds.clear();
+  selectedPostingIds.clear();
+  if(scrapsLoaded) renderScraps();
+  if(postingsLoaded) renderPostings();
+  updateSelectionCount();
+};
 
 function updateSelectionCount(){
   const n = selectedScrapIds.size + selectedPostingIds.size;
