@@ -296,6 +296,7 @@
       ⇧ 데이터 가져오기
       <input type="file" id="importFile" accept=".json" style="display:none;">
     </label>
+    <button class="btn ghost small" id="printScrapsBtn">🖨 스크랩·공고 인쇄</button>
     <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--grey);">
       Claude에서 쓰던 예전 기록을 옮겨오려면, 예전 페이지에서 먼저 내보낸 뒤 여기서 가져오세요.
     </span>
@@ -1286,6 +1287,85 @@ if('serviceWorker' in navigator){
     navigator.serviceWorker.register('sw.js').catch(()=>{});
   });
 }
+
+// ---- Print: 스크랩 + 공고 모음 ----
+document.getElementById('printScrapsBtn').onclick = async () => {
+  if(!scrapsLoaded) await loadScraps();
+  if(!postingsLoaded) await loadPostings();
+
+  const today = new Date().toLocaleDateString('ko-KR');
+
+  const scrapRows = scraps
+    .slice()
+    .sort((a,b) => (b.date||'').localeCompare(a.date||''))
+    .map(s => `
+      <div class="p-item">
+        <div class="p-item-top">
+          <strong>${escapeHtml(s.company || '(회사 미입력)')}</strong>
+          <span class="p-tag">${escapeHtml(s.type||'')}</span>
+          <span class="p-date">${s.date||''}</span>
+        </div>
+        <div class="p-title">${escapeHtml(s.title || '(제목 없음)')}</div>
+        ${s.link ? `<div class="p-link">${escapeHtml(s.link)}</div>` : ''}
+        ${s.memo ? `<div class="p-memo">${escapeHtml(s.memo)}</div>` : ''}
+      </div>
+    `).join('') || '<p class="p-empty">등록된 스크랩이 없어요.</p>';
+
+  const postingRows = postings
+    .slice()
+    .sort((a,b) => (a.deadline||'9999').localeCompare(b.deadline||'9999'))
+    .map(p => `
+      <div class="p-item">
+        <div class="p-item-top">
+          <strong>${escapeHtml(p.company || '(회사 미입력)')}</strong>
+          <span class="p-tag">${escapeHtml(p.platform||'')}</span>
+          <span class="p-date">마감 ${p.deadline || '미정'}</span>
+        </div>
+        <div class="p-title">${escapeHtml(p.position || '')}</div>
+        ${p.link ? `<div class="p-link">${escapeHtml(p.link)}</div>` : ''}
+        ${p.memo ? `<div class="p-memo">${escapeHtml(p.memo)}</div>` : ''}
+        <div class="p-status">${p.applied === 'yes' ? '지원완료' : '미지원'} · 발견 ${p.found || ''}</div>
+      </div>
+    `).join('') || '<p class="p-empty">등록된 공고가 없어요.</p>';
+
+  const printHtml = `
+  <!DOCTYPE html>
+  <html lang="ko"><head><meta charset="UTF-8"><title>스크랩·공고 모음 인쇄</title>
+  <style>
+    body{font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;color:#111;background:#fff;padding:32px;max-width:720px;margin:0 auto;}
+    h1{font-size:22px;border-bottom:2px solid #111;padding-bottom:8px;margin-bottom:4px;}
+    .meta{font-size:11px;color:#666;margin-bottom:24px;}
+    h2{font-size:16px;margin:28px 0 10px;border-left:4px solid #111;padding-left:8px;}
+    .p-item{border:1px solid #ccc;border-radius:6px;padding:10px 12px;margin-bottom:10px;page-break-inside:avoid;}
+    .p-item-top{display:flex;gap:10px;align-items:baseline;font-size:13px;margin-bottom:4px;}
+    .p-item-top strong{font-size:14.5px;}
+    .p-tag{font-size:10.5px;background:#eee;padding:2px 7px;border-radius:10px;}
+    .p-date{font-size:11px;color:#666;margin-left:auto;}
+    .p-title{font-size:13.5px;font-weight:600;margin-bottom:3px;}
+    .p-link{font-size:11px;color:#333;word-break:break-all;margin-bottom:3px;}
+    .p-memo{font-size:12.5px;color:#333;white-space:pre-wrap;line-height:1.5;}
+    .p-status{font-size:11px;color:#666;margin-top:4px;}
+    .p-empty{font-size:13px;color:#888;}
+    @media print{ body{padding:12px;} }
+  </style></head>
+  <body>
+    <h1>취준 기록실 — 스크랩·공고 모음</h1>
+    <div class="meta">인쇄일: ${today}</div>
+    <h2>스크랩 (${scraps.length}건)</h2>
+    ${scrapRows}
+    <h2>공고 (${postings.length}건)</h2>
+    ${postingRows}
+  </body></html>`;
+
+  const win = window.open('', '_blank');
+  if(!win){
+    alert('팝업이 차단됐어요. 이 사이트의 팝업을 허용해주세요.');
+    return;
+  }
+  win.document.write(printHtml);
+  win.document.close();
+  win.onload = () => { win.focus(); win.print(); };
+};
 </script>
 </body>
 </html>
